@@ -41,6 +41,26 @@ def angle_guasti(d, n):
     return np.arctan2(n / d, d)  # equivalent à arctan((n/d) / d) = arctan(n/d²)
 
 
+def distance_origine(d, n):
+    """
+    Distance à l'origine du point (d, n/d) dans la Grille de Guasti.
+    """
+    return np.sqrt(d ** 2 + (n / d) ** 2)
+
+
+def poids_distance(r, beta, mode):
+    """
+    Poids basé sur la distance à l'origine.
+    - attenuation : w = 1 / (1 + beta * r)
+    - amplification : w = log(1 + r)
+    """
+    if mode == "attenuation":
+        return 1.0 / (1.0 + beta * r)
+    if mode == "amplification":
+        return np.log1p(r)
+    return 1.0
+
+
 def tau(n):
     """Nombre de diviseurs de n (fonction τ)."""
     return len(diviseurs(n))
@@ -66,6 +86,27 @@ def G_m(n, m):
         return 0.0
     somme = sum(np.exp(1j * m * angle_guasti(d, n)) for d in divs)
     return somme / np.sqrt(t)
+
+
+def G_m_distance(n, m, beta=0.001, mode="attenuation"):
+    """
+    Variante de G_m(n) pondérée par la distance à l'origine.
+
+    Les contributions des diviseurs sont modulées par un poids w(r).
+    On normalise par sqrt(sum(w^2)) pour garder une échelle comparable.
+    """
+    divs = diviseurs(n)
+    if not divs:
+        return 0.0
+    poids = []
+    termes = []
+    for d in divs:
+        r = distance_origine(d, n)
+        w = poids_distance(r, beta, mode)
+        poids.append(w)
+        termes.append(w * np.exp(1j * m * angle_guasti(d, n)))
+    normalisation = np.sqrt(np.sum(np.square(poids))) if poids else 1.0
+    return np.sum(termes) / normalisation
 
 
 # =============================================================================
@@ -220,6 +261,29 @@ def demo_spectres(N=200, nb_frequences=500):
     return resultats
 
 
+def demo_distance_compare(N=1000, beta=0.001, modes=None):
+    """
+    Compare deux pondérations distance : atténuation vs amplification.
+    """
+    if modes is None:
+        modes = [1, 2, 4, 8]
+
+    print(f"\n{'=' * 60}")
+    print(f"  COMPARAISON DISTANCE — N={N}, beta={beta}")
+    print(f"{'=' * 60}")
+    print(f"  {'Mode':<10} {'Type':<15} {'Max |G|':<12} {'Moyenne |G|':<15}")
+    print(f"  {'-' * 56}")
+
+    for m in modes:
+        for mode in ["attenuation", "amplification"]:
+            valeurs = [np.abs(G_m_distance(n, m, beta=beta, mode=mode)) for n in range(1, N + 1)]
+            max_val = float(np.max(valeurs)) if valeurs else 0.0
+            mean_val = float(np.mean(valeurs)) if valeurs else 0.0
+            print(f"  m={m:<7} {mode:<15} {max_val:<12.4f} {mean_val:<15.4f}")
+
+    print(f"{'=' * 60}")
+
+
 def demo_modulaire(N=200, m=2, k=6):
     """
     Démonstration de l'analyse modulaire pour un mode et un modulus donnés.
@@ -308,6 +372,11 @@ if __name__ == "__main__":
     # Paramètres (ajustables)
     N = 200              # Nombre d'entiers à analyser
     NB_FREQ = 500        # Nombre de fréquences spectrales
+    N_DISTANCE = 1000    # Taille pour la comparaison distance
+    BETA = 0.001         # Paramètre de pondération distance
+
+    # 0. Comparaison distance (atténuation vs amplification)
+    demo_distance_compare(N=N_DISTANCE, beta=BETA)
 
     # 1. Spectres multi-harmoniques
     resultats = demo_spectres(N=N, nb_frequences=NB_FREQ)
