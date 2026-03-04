@@ -48,6 +48,16 @@ def distance_origine(d, n):
     return np.sqrt(d ** 2 + (n / d) ** 2)
 
 
+def angle_constraint_weight(theta, gamma=1.0):
+    """
+    Pondération explicite des 3 directions : 0°, 45°, 90°.
+    Renforce les contributions proches de ces axes.
+    """
+    targets = [0.0, np.pi / 4.0, np.pi / 2.0]
+    closeness = [max(0.0, np.cos(abs(theta - t))) for t in targets]
+    return 1.0 + gamma * (sum(closeness) / len(closeness))
+
+
 def poids_distance(r, beta, mode):
     """
     Poids basé sur la distance à l'origine.
@@ -88,11 +98,12 @@ def G_m(n, m):
     return somme / np.sqrt(t)
 
 
-def G_m_distance(n, m, beta=0.001, mode="attenuation"):
+def G_m_distance(n, m, beta=0.001, mode="attenuation", gamma=1.0, apply_angle_constraint=True):
     """
     Variante de G_m(n) pondérée par la distance à l'origine.
 
     Les contributions des diviseurs sont modulées par un poids w(r).
+    Optionnel : contrainte explicite 0°/45°/90° pour renforcer la signature.
     On normalise par sqrt(sum(w^2)) pour garder une échelle comparable.
     """
     divs = diviseurs(n)
@@ -102,9 +113,12 @@ def G_m_distance(n, m, beta=0.001, mode="attenuation"):
     termes = []
     for d in divs:
         r = distance_origine(d, n)
-        w = poids_distance(r, beta, mode)
+        w_distance = poids_distance(r, beta, mode)
+        theta = angle_guasti(d, n)
+        w_angle = angle_constraint_weight(theta, gamma) if apply_angle_constraint else 1.0
+        w = w_distance * w_angle
         poids.append(w)
-        termes.append(w * np.exp(1j * m * angle_guasti(d, n)))
+        termes.append(w * np.exp(1j * m * theta))
     normalisation = np.sqrt(np.sum(np.square(poids))) if poids else 1.0
     return np.sum(termes) / normalisation
 
@@ -261,27 +275,51 @@ def demo_spectres(N=200, nb_frequences=500):
     return resultats
 
 
-def demo_distance_compare(N=1000, beta=0.001, modes=None):
+def demo_distance_compare(N=1000, beta=0.001, gamma=1.0, modes=None, apply_angle_constraint=True):
     """
     Compare deux pondérations distance : atténuation vs amplification.
+    Ajoute une contrainte angulaire explicite 0°/45°/90°.
     """
     if modes is None:
         modes = [1, 2, 4, 8]
 
     print(f"\n{'=' * 60}")
-    print(f"  COMPARAISON DISTANCE — N={N}, beta={beta}")
+    print(f"  COMPARAISON DISTANCE — N={N}, beta={beta}, gamma={gamma}")
+    print(f"  Contrainte 0°/45°/90° : {'ON' if apply_angle_constraint else 'OFF'}")
     print(f"{'=' * 60}")
     print(f"  {'Mode':<10} {'Type':<15} {'Max |G|':<12} {'Moyenne |G|':<15}")
     print(f"  {'-' * 56}")
 
+    valeurs_par_mode = {}
+
     for m in modes:
+        valeurs_par_mode[m] = {}
         for mode in ["attenuation", "amplification"]:
-            valeurs = [np.abs(G_m_distance(n, m, beta=beta, mode=mode)) for n in range(1, N + 1)]
+            valeurs = [
+                np.abs(G_m_distance(n, m, beta=beta, mode=mode, gamma=gamma, apply_angle_constraint=apply_angle_constraint))
+                for n in range(1, N + 1)
+            ]
+            valeurs_par_mode[m][mode] = np.array(valeurs)
             max_val = float(np.max(valeurs)) if valeurs else 0.0
             mean_val = float(np.mean(valeurs)) if valeurs else 0.0
             print(f"  m={m:<7} {mode:<15} {max_val:<12.4f} {mean_val:<15.4f}")
 
     print(f"{'=' * 60}")
+
+    fig, axes = plt.subplots(len(modes), 1, figsize=(12, 10), sharex=True)
+    x_values = np.arange(1, N + 1)
+    for idx, m in enumerate(modes):
+        delta = valeurs_par_mode[m]["amplification"] - valeurs_par_mode[m]["attenuation"]
+        axes[idx].plot(x_values, delta, color="#8E44AD", linewidth=0.8)
+        axes[idx].axhline(0.0, color="#444444", linewidth=0.8, linestyle="--")
+        axes[idx].set_title(f"Écart amplification - atténuation (m={m})", fontsize=10)
+        axes[idx].set_ylabel("Δ|G|")
+        axes[idx].grid(True, alpha=0.25)
+
+    axes[-1].set_xlabel("n")
+    plt.tight_layout()
+    plt.savefig("gmhms_distance_delta.png", dpi=150, bbox_inches="tight")
+    print("  → Figure sauvegardée : gmhms_distance_delta.png")
 
 
 def demo_modulaire(N=200, m=2, k=6):
@@ -374,9 +412,10 @@ if __name__ == "__main__":
     NB_FREQ = 500        # Nombre de fréquences spectrales
     N_DISTANCE = 1000    # Taille pour la comparaison distance
     BETA = 0.001         # Paramètre de pondération distance
+    GAMMA = 1.0          # Intensité de la contrainte angulaire 0°/45°/90°
 
     # 0. Comparaison distance (atténuation vs amplification)
-    demo_distance_compare(N=N_DISTANCE, beta=BETA)
+    demo_distance_compare(N=N_DISTANCE, beta=BETA, gamma=GAMMA, apply_angle_constraint=True)
 
     # 1. Spectres multi-harmoniques
     resultats = demo_spectres(N=N, nb_frequences=NB_FREQ)
