@@ -50,8 +50,8 @@ def distance_origine(d, n):
 
 def angle_constraint_weight(theta, gamma=1.0):
     """
-    Pondération explicite des 3 directions : 0°, 45°, 90°.
-    Renforce les contributions proches de ces axes.
+    Pondération explicite du triptyque ontologique : 0°, 45°, 90°.
+    Renforce les contributions proches de ces axes directionnels.
     """
     targets = [0.0, np.pi / 4.0, np.pi / 2.0]
     closeness = [max(0.0, np.cos(abs(theta - t))) for t in targets]
@@ -87,7 +87,8 @@ def G_m(n, m):
     G_m(n) = (1 / √τ(n)) * Σ_{d|n} e^{i·m·θ(d,n)}
 
     Chaque entier est un "résonateur" dont les diviseurs sont les harmoniques.
-    Pour un premier p : seulement 2 diviseurs → signature minimale.
+    Pour un premier p : signature minimale alignée sur le triptyque directionnel
+    (L1 horizontal 0°, Cp vertical 90°, id diagonal 45°).
     Pour un composite : nuage riche d'angles → interférences complexes.
     """
     divs = diviseurs(n)
@@ -224,7 +225,7 @@ def demo_spectres(N=200, nb_frequences=500):
     modes = [0, 1, 2, 4, 8]
     couleurs = ["#2E5090", "#3A6BA5", "#E74C3C", "#27AE60", "#8E44AD"]
     labels = ["m=0 (masse brute)", "m=1 (forme globale)",
-              "m=2 (ANNULATION ?)", "m=4 (irrégularités)", "m=8 (symétrie 45°)"]
+              "m=2 (annulation à requalifier)", "m=4 (irrégularités)", "m=8 (axe 45°)"]
 
     fig, axes = plt.subplots(len(modes), 1, figsize=(12, 14), sharex=True)
     fig.suptitle(f"Spectre Guasti Multi-Harmonique — GMHMS (N={N})",

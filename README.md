@@ -18,7 +18,8 @@ Ce cadre est né d'une difficulté personnelle avec les tables de multiplication
 - **Ln** représente la table de n
 - Le nombre **k** apparaît toujours en colonne k
 - La colonne **k** affiche les diviseurs de k
-- La diagonale montre 1, 2, 3... (pas les carrés parfaits)
+- La diagonale **(n,n)** contient tous les entiers 1, 2, 3… (pas les carrés parfaits)
+- Cette diagonale n’est pas un motif arithmétique, mais un **axe ontologique** à 45°
 
 ### Le cadre GMHMS en 6 étages
 
@@ -38,7 +39,13 @@ Polynômes L-compatibles : P_{m,χ}(t) = Σ a_n^(χ) · n^{-it}
 
 ### Découverte principale : l'annulation du mode m=2
 
-Le mode harmonique **m=2** produit une **annulation spectrale complète** (Max |P(t)| = 0.0) sur l'ensemble de la fenêtre spectrale testée. Cela révèle une symétrie structurelle exacte de la géométrie des diviseurs — un **invariant Guasti** potentiellement publiable, indépendant de l'Hypothèse de Riemann.
+Le mode harmonique **m=2** produit une **annulation spectrale complète** (Max |P(t)| = 0.0) sur l'ensemble de la fenêtre spectrale testée. **Rectification** : cette annulation doit être relue à la lumière du **triptyque géométrique** (0°, 45°, 90°). La diagonale (n,n) est un **rayon ontologique** et non une répétition triviale des carrés parfaits. Un premier **P** est représenté par :
+
+- un rayon horizontal **L1** tendant vers 0°,
+- un rayon vertical **Cp** tendant vers 90°,
+- un rayon diagonal **id** tendant vers 45°.
+
+Ce triplet d’angles impose de requalifier l’annulation m=2 comme un phénomène **géométrique directionnel**, et non un simple motif arithmétique.
 
 ### Résultats spectraux
 
@@ -84,7 +91,13 @@ L-compatible polynomials: P_{m,χ}(t) = Σ a_n^(χ) · n^{-it}
 
 ### Key Discovery: m=2 Annihilation
 
-Harmonic mode **m=2** produces **complete spectral annihilation** (Max |P(t)| = 0.0), revealing an exact structural symmetry in divisor geometry — a potential **Guasti invariant**, independent of the Riemann Hypothesis.
+Harmonic mode **m=2** produces **complete spectral annihilation** (Max |P(t)| = 0.0). **Rectification**: this cancellation must be reinterpreted through the **geometric triptych** of directions (0°, 45°, 90°). The (n,n) diagonal is an **ontological ray**, not a trivial repetition of perfect squares. A prime **P** is represented by:
+
+- a horizontal ray **L1** tending to 0°,
+- a vertical ray **Cp** tending to 90°,
+- a diagonal ray **id** tending to 45°.
+
+This triplet reframes m=2 as a **directional geometric phenomenon**, not a purely arithmetic motif.
 
 ### Relation to the Riemann Hypothesis
 
