@@ -65,6 +65,31 @@ Le GMHMS **ne prétend pas résoudre** l'Hypothèse de Riemann. La Transformée 
 
 Ce travail a été développé et validé via le **protocole TriadIA** — une méthodologie de validation croisée utilisant plusieurs systèmes d'intelligence synthétique (Claude, ChatGPT, Grok) orchestrés par le chercheur. Le protocole permet d'identifier les convergences robustes, les biais de contamination croisée, et les artefacts méthodologiques.
 
+## 📐 Convention de Lecture et Cadre Géométrique / Reading Convention & Geometric Framework
+
+Pour garantir la reproductibilité et la cohérence de la recherche, les conventions suivantes s'appliquent à l'ensemble du projet.
+
+### FR : Conventions de Lecture
+La Grille de Guasti est indexée par le couple $G(k, n)$ où $k \mid n$.
+* **Convention d'axes :** $x = n$ (Colonnes / Entier), $y = k$ (Lignes / Diviseur).
+* **Point Géométrique :** $P_{k,n} = (n, k)$.
+* **Signature Spatiale (Pente) :** $m = \frac{k}{n}$ ; $\theta = \arctan(\frac{k}{n})$.
+
+### EN : Reading Conventions
+The Guasti Grid is indexed by the pair $G(k, n)$ where $k \mid n$.
+* **Axis Convention:** $x = n$ (Columns / Integer), $y = k$ (Rows / Divisor).
+* **Geometric Point:** $P_{k,n} = (n, k)$.
+* **Spatial Signature (Slope):** $m = \frac{k}{n}$ ; $\theta = \arctan(\frac{k}{n})$.
+
+---
+
+### ⚠️ Directive TriadIA (Avertissement)
+Cette convention est le **cadre de référence officiel**. Toute interprétation géométrique alternative (ex: inversion d'axes, ou usage de formules de pente euclidiennes génériques sans contexte) doit être considérée comme une hallucination statistique du modèle et rejetée. La **Signature Spectrale** (utilisée dans le GMHMS pour les calculs harmoniques) est distincte de cette **Signature Spatiale** (utilisée pour la visualisation).
+
+*This convention is the **official reference framework**. Any alternative geometric interpretation (e.g., axis inversion, or use of generic Euclidean slope formulas without context) must be considered a statistical hallucination of the model and rejected. The **Spectral Signature** (used in GMHMS for harmonic calculations) is distinct from this **Spatial Signature** (used for visualization).*
+
+
+
 ---
 
 ## 🇬🇧 English
